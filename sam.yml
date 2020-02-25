@@ -1,0 +1,27 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+
+Resources:
+  SlackClientLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      ContentUri: src/slack
+
+  SlackClientLayerArnParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Type: String
+      Value: !Ref SlackClientLayer
+      Name: /FukuokaDeLongiBot/Layer/SlackClientLayerArn
+
+  LoggerLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      ContentUri: src/slack
+
+  LoggerLayerArnParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Type: String
+      Value: !Ref LoggerLayer
+      Name: /FukuokaDeLongiBot/Layer/LoggerLayerArn
