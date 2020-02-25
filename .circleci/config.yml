@@ -34,11 +34,11 @@ jobs:
       - save_cache:
           paths:
             - .venv
-          key: poetry-{{ checksum "pyproject.toml" }}-{{ checksum "poetry.lock" }}
+          key: fukuoka-de-longi-bot-layer-poetry-{{ checksum "pyproject.toml" }}-{{ checksum "poetry.lock" }}
       - save_cache:
           paths:
-            - src/layers/modules/python
-          key: layer-{{ checksum "src/layers/modules/Dockerfile" }}-{{ checksum "src/layers/modules/requirements.txt" }}
+            - src/slack/python
+          key: fukuoka-de-longi-bot-layer-slack-{{ checksum "src/slack/Dockerfile" }}-{{ checksum "src/slack/requirements.txt" }}
       - run:
           name: deploy
           command: |
