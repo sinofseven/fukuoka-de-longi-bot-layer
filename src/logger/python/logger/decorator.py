@@ -18,14 +18,16 @@ def get_environments(extra_environment_value_names: List[str]) -> dict:
     return result
 
 
-def lambda_auto_logging(*extra_environment_value_names: str, throw_exception: bool = True) -> Callable:
+def lambda_auto_logging(
+    *extra_environment_value_names: str, throw_exception: bool = True, alert_unexpected_exception: bool = True
+) -> Callable:
     def wrapper(handler):
         @wraps(handler)
         def decorator(event, context):
             try:
                 os.environ[LAMBDA_REQUEST_ID_ENVIRONMENT_VALUE_NAME] = context.aws_request_id
             except Exception as e:
-                logger.error(f"Exception occurred: {e}")
+                logger.warning(f"Exception occurred: {e}")
 
             try:
                 logger.info(
@@ -35,14 +37,17 @@ def lambda_auto_logging(*extra_environment_value_names: str, throw_exception: bo
                     environment_values=get_environments(list(extra_environment_value_names)),
                 )
             except Exception as e:
-                logger.error(f"Exception occurred: {e}")
+                logger.warning(f"Exception occurred: {e}")
 
             try:
                 result = handler(event, context)
                 logger.info("lambda result", result=result)
                 return result
             except Exception as e:
-                logger.error(f"Exception occurred: {e}")
+                if alert_unexpected_exception:
+                    logger.error(f"Exception occurred: {e}")
+                else:
+                    logger.warning(f"Exception occurred: {e}")
                 if throw_exception:
                     raise
 
