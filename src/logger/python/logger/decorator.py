@@ -13,8 +13,7 @@ logger = MyLogger(__name__)
 
 
 def get_environments(extra_environment_value_names: List[str]) -> dict:
-    target_names = [] + extra_environment_value_names
-    result = {x: os.getenv(x) for x in target_names}
+    result = {x: os.getenv(x) for x in extra_environment_value_names}
     return result
 
 
@@ -25,6 +24,7 @@ def lambda_auto_logging(
         @wraps(handler)
         def decorator(event, context):
             try:
+                # LogにLambdaのRequestIdを出力するために環境変数として保存する
                 os.environ[LAMBDA_REQUEST_ID_ENVIRONMENT_VALUE_NAME] = context.aws_request_id
             except Exception as e:
                 logger.warning(f"Exception occurred: {e}")
@@ -44,6 +44,7 @@ def lambda_auto_logging(
                 logger.info("lambda result", result=result)
                 return result
             except Exception as e:
+                # Handler側でエラー処理することがあるので、アラート対象に
                 if alert_unexpected_exception:
                     logger.error(f"Exception occurred: {e}")
                 else:
